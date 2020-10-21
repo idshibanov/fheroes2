@@ -156,7 +156,7 @@ s32 Battle::Board::GetDistance( s32 index1, s32 index2 )
 
 void Battle::Board::SetScanPassability( const Unit & b )
 {
-    std::for_each( begin(), end(), std::mem_fun_ref( &Cell::ResetDirection ) );
+    Arena & arena = *GetArena();
 
     at( b.GetHeadIndex() ).SetDirection( CENTER );
 
@@ -166,12 +166,19 @@ void Battle::Board::SetScanPassability( const Unit & b )
                 ( *it ).SetDirection( CENTER );
     }
     else {
-        Indexes indexes = GetDistanceIndexes( b.GetHeadIndex(), b.GetSpeed() );
-        indexes.resize( std::distance( indexes.begin(), std::remove_if( indexes.begin(), indexes.end(), isImpassableIndex ) ) );
+        const uint32_t speed = b.GetSpeed();
 
-        // set pasable
-        for ( Indexes::const_iterator it = indexes.begin(); it != indexes.end(); ++it )
-            GetAStarPath( b, Position::GetCorrect( b, *it ), false );
+        for ( Cell & cell : *this ) {
+            if ( arena.CalculateMoveDistance( cell.GetIndex() ) <= speed ) {
+                cell.SetDirection( CENTER );
+            }
+        }
+        //Indexes indexes = GetDistanceIndexes( b.GetHeadIndex(), b.GetSpeed() );
+        //indexes.resize( std::distance( indexes.begin(), std::remove_if( indexes.begin(), indexes.end(), isImpassableIndex ) ) );
+
+        //// set pasable
+        //for ( Indexes::const_iterator it = indexes.begin(); it != indexes.end(); ++it )
+        //    GetAStarPath( b, Position::GetCorrect( b, *it ), false );
     }
 }
 

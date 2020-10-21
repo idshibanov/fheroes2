@@ -108,7 +108,7 @@ namespace Battle
         uint32_t CalculateMoveDistance( int32_t indexTo );
         bool hexIsAccessible( int32_t indexTo );
         bool hexIsPassable( int32_t indexTo );
-        Indexes GetPath( const Unit &, const Position & );
+        Indexes GetPath( const Unit &, int targetIndex );
 
         void ApplyAction( Command & );
 

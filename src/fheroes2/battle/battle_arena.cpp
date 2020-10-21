@@ -508,6 +508,9 @@ void Battle::Arena::RemoteTurn( const Unit & b, Actions & a )
 
 void Battle::Arena::HumanTurn( const Unit & b, Actions & a )
 {
+    board.Reset();
+    board.SetScanPassability( b );
+
     if ( interface )
         interface->HumanTurn( b, a );
 }
@@ -553,9 +556,12 @@ void Battle::Arena::CatapultAction( void )
     }
 }
 
-Battle::Indexes Battle::Arena::GetPath( const Unit & b, const Position & dst )
+Battle::Indexes Battle::Arena::GetPath( const Unit & b, int targetIndex )
 {
-    Indexes result = board.GetAStarPath( b, dst );
+    Indexes result = _pathfinder.buildPath( targetIndex );
+    if ( result.size() > b.GetSpeed() ) {
+        result.resize( b.GetSpeed() );
+    }
 
     if ( result.size() ) {
         if ( IS_DEBUG( DBG_BATTLE, DBG_TRACE ) ) {

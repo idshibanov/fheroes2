@@ -1829,10 +1829,6 @@ void Battle::Interface::HumanTurn( const Unit & b, Actions & a )
     // in case we moved the window
     _interfacePosition = border.GetArea();
 
-    Board & board = *Arena::GetBoard();
-    board.Reset();
-    board.SetScanPassability( b );
-
     if ( listlog && turn != arena.GetCurrentTurn() ) {
         turn = arena.GetCurrentTurn();
         std::string msg = _( "Turn %{turn}" );
@@ -1852,6 +1848,7 @@ void Battle::Interface::HumanTurn( const Unit & b, Actions & a )
 
     ResetIdleTroopAnimation();
 
+    Board & board = *Arena::GetBoard();
     while ( !humanturn_exit && le.HandleEvents() ) {
         // move cursor
         const s32 index_new = board.GetIndexAbsPosition( GetMouseCursor() );

@@ -114,16 +114,17 @@ namespace Battle
         return _cache[targetCell]._cost == 0 || ( _cache[targetCell]._isOpen && _cache[targetCell]._from != -1 );
     }
 
-    std::list<Route::Step> ArenaPathfinder::buildPath( int targetCell ) const
+    std::vector<int> ArenaPathfinder::buildPath( int targetCell ) const
     {
-        std::list<Route::Step> path;
+        std::vector<int> path;
 
         int currentNode = targetCell;
-        while ( currentNode != targetCell && _cache[currentNode]._cost != 0 ) {
+        while ( currentNode != _pathStart && _cache[currentNode]._cost != 0 ) {
             const ArenaNode & node = _cache[currentNode];
-            path.emplace_front( node._from, Board::GetDirection( node._from, currentNode ), 1 );
+            path.push_back( currentNode );
             currentNode = node._from;
         }
+        std::reverse( path.begin(), path.end() );
 
         return path;
     }

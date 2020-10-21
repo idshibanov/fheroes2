@@ -285,7 +285,7 @@ void Battle::Arena::ApplyActionMove( Command & cmd )
 
             // check path
             if ( 0 == path_size ) {
-                path = GetPath( *b, pos1 );
+                path = GetPath( *b, dst );
                 cmd = Command( MSG_BATTLE_MOVE, b->GetUID(), dst, path );
             }
             else
