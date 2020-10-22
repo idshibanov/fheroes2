@@ -105,6 +105,11 @@ bool Battle::Position::isValid( void ) const
     return first && ( !second || ( ( LEFT | RIGHT ) & Board::GetDirection( first->GetIndex(), second->GetIndex() ) ) );
 }
 
+bool Battle::Position::contains( int index ) const
+{
+    return first->GetIndex() == index || second->GetIndex() == index;
+}
+
 Battle::Cell::Cell()
     : index( 0 )
     , object( 0 )

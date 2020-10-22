@@ -25,7 +25,7 @@
 namespace Battle
 {
     // If move is not valid this function returns -1 otherwise returns new index after the move.
-    int GetValidMoveIndex( int fromCell, int directionMask, bool isWide )
+    int GetValidMoveIndex( int fromCell, int directionMask, const Position & originalPos, bool isWide )
     {
         int newIndex = -1;
         int wideUnitOffset = 0;
@@ -75,11 +75,18 @@ namespace Battle
         }
 
         // invalidate move
-        if ( newIndex == -1 || !Board::GetCell( newIndex )->isPassable1( false ) )
+        if ( newIndex == -1 || ( !Board::GetCell( newIndex )->isPassable1( true ) && !originalPos.contains( newIndex ) ) )
             return -1;
 
-        if ( isWide && ( x + wideUnitOffset < 0 || x + wideUnitOffset > ARENAW - 1 || !Board::GetCell( newIndex + wideUnitOffset )->isPassable1( false ) ) )
-            return -1;
+        if ( isWide ) {
+            // check if "tail" can be placed
+            if ( x + wideUnitOffset < 0 || x + wideUnitOffset > ARENAW - 1 )
+                return -1;
+
+            const int wideUnitIndex = newIndex + wideUnitOffset;
+            if ( !Board::GetCell( wideUnitIndex )->isPassable1( true ) && !originalPos.contains( wideUnitIndex ) )
+                return -1;
+        }
 
         return newIndex;
     }
@@ -133,13 +140,14 @@ namespace Battle
     {
         reset();
 
-        const Cell * unitHead = unit.GetPosition().GetHead();
+        const Position & originalPosition = unit.GetPosition();
+        const Cell * unitHead = originalPosition.GetHead();
         if ( !unitHead ) {
             DEBUG( DBG_BATTLE, DBG_WARN, "Pathfinder: Invalid unit is passed in! " << unit.GetName() );
             return;
         }
 
-        const Cell * unitTail = unit.GetPosition().GetTail();
+        const Cell * unitTail = originalPosition.GetTail();
         const bool unitIsWide = unit.isWide();
 
         const int headIdx = unitHead->GetIndex();
@@ -198,7 +206,7 @@ namespace Battle
                 const int fromNode = nodesToExplore[lastProcessedNode];
 
                 for ( int direction = TOP_LEFT; direction < CENTER; direction = direction << 1 ) {
-                    const int newNode = GetValidMoveIndex( fromNode, direction, unitIsWide );
+                    const int newNode = GetValidMoveIndex( fromNode, direction, originalPosition, unitIsWide );
 
                     if ( newNode != -1 ) {
                         const uint32_t cost = _cache[fromNode]._cost;
