@@ -107,7 +107,7 @@ bool Battle::Position::isValid( void ) const
 
 bool Battle::Position::contains( int index ) const
 {
-    return first->GetIndex() == index || second->GetIndex() == index;
+    return ( first && first->GetIndex() == index ) || ( second && second->GetIndex() == index );
 }
 
 Battle::Cell::Cell()

@@ -276,7 +276,7 @@ void Battle::Arena::ApplyActionMove( Command & cmd )
             b->UpdateDirection( pos1.GetRect() );
             if ( b->isReflect() != pos1.isReflect() )
                 pos1.Swap();
-            if ( interface )
+            if ( interface && !b->GetPosition().contains( dst ) )
                 interface->RedrawActionFly( *b, pos1 );
             pos2 = pos1;
         }
