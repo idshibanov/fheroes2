@@ -2805,22 +2805,27 @@ void Battle::Interface::RedrawActionMove( Unit & unit, const Indexes & path )
     _movingUnit = &unit;
 
     while ( dst != path.end() ) {
-        const Cell * cell = Board::GetCell( *dst );
+        int destination = *dst;
+        const Cell * cell = Board::GetCell( destination );
         _movingPos = cell->GetPos();
         bool show_anim = false;
 
-        if ( bridge && bridge->NeedDown( unit, *dst ) ) {
+        if ( bridge && bridge->NeedDown( unit, destination ) ) {
             _movingUnit = NULL;
             unit.SwitchAnimation( Monster_Info::STATIC );
-            bridge->Action( unit, *dst );
+            bridge->Action( unit, destination );
             _movingUnit = &unit;
         }
 
-        if ( unit.isWide() ) {
-            if ( unit.GetTailIndex() == *dst )
+         if ( unit.isWide() ) {
+            show_anim = true;
+            auto newPos = Position::GetCorrect( unit, destination );
+            const int correctDest = newPos.GetHead()->GetIndex();
+            destination = correctDest;
+            _movingPos = newPos.GetHead()->GetPos();
+
+            if ( !Board::isNearIndexes( unit.GetHeadIndex(), destination ) )
                 unit.SetReflection( !unit.isReflect() );
-            else
-                show_anim = true;
         }
         else {
             unit.UpdateDirection( cell->GetPos() );
@@ -2831,14 +2836,14 @@ void Battle::Interface::RedrawActionMove( Unit & unit, const Indexes & path )
             AGG::PlaySound( unit.M82Move() );
             unit.SwitchAnimation( Monster_Info::MOVING );
             AnimateUnitWithDelay( unit, frameDelay );
-            unit.SetPosition( *dst );
+            unit.SetPosition( destination );
         }
 
         // check for possible bridge close action, after unit's end of movement
         if ( bridge && bridge->AllowUp() ) {
             _movingUnit = NULL;
             unit.SwitchAnimation( Monster_Info::STATIC );
-            bridge->Action( unit, *dst );
+            bridge->Action( unit, destination );
             _movingUnit = &unit;
         }
 
