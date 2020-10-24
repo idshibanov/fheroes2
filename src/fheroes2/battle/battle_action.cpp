@@ -328,16 +328,16 @@ void Battle::Arena::ApplyActionMove( Command & cmd )
             }
 
             if ( b->isWide() ) {
-                const s32 dst1 = path.back();
-                const s32 dst2 = 1 < path.size() ? path[path.size() - 2] : head;
+                //const s32 dst1 = path.back();
+                //const s32 dst2 = 1 < path.size() ? path[path.size() - 2] : head;
 
-                pos2.Set( dst1, b->isWide(), RIGHT_SIDE & Board::GetDirection( dst1, dst2 ) );
+                //pos2.Set( dst1, b->isWide(), RIGHT_SIDE & Board::GetDirection( dst1, dst2 ) );
             }
             else
                 pos2.Set( path.back(), false, b->isReflect() );
         }
 
-        b->SetPosition( pos2 );
+        //b->SetPosition( pos2 );
         b->UpdateDirection();
     }
     else {

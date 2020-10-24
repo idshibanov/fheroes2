@@ -2821,11 +2821,15 @@ void Battle::Interface::RedrawActionMove( Unit & unit, const Indexes & path )
             show_anim = true;
             auto newPos = Position::GetCorrect( unit, destination );
             const int correctDest = newPos.GetHead()->GetIndex();
+
+            auto dir = Board::GetDirection( unit.GetHeadIndex(), destination );
+            if ( ( dir == TOP_LEFT || dir == LEFT || dir == BOTTOM_LEFT ) )
+                unit.SetReflection( true );
+            else
+                unit.SetReflection( false );
+
             destination = correctDest;
             _movingPos = newPos.GetHead()->GetPos();
-
-            if ( !Board::isNearIndexes( unit.GetHeadIndex(), destination ) )
-                unit.SetReflection( !unit.isReflect() );
         }
         else {
             unit.UpdateDirection( cell->GetPos() );
