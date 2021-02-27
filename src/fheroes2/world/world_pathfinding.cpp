@@ -162,6 +162,7 @@ void WorldPathfinder::processWorldMap( int pathStart )
     // reset cache back to default value
     for ( size_t idx = 0; idx < _cache.size(); ++idx ) {
         _cache[idx].resetNode();
+        world.GetTiles( idx ).debugCost = 0;
     }
     _cache[pathStart] = PathfindingNode( -1, 0, 0 );
 
@@ -187,11 +188,12 @@ void WorldPathfinder::checkAdjacentNodes( std::vector<int> & nodesToExplore, int
             const uint32_t moveCost = currentNode._cost + getMovementPenalty( currentNodeIdx, newIndex, directions[i], _pathfindingSkill );
             PathfindingNode & newNode = _cache[newIndex];
             if ( world.isValidPath( currentNodeIdx, directions[i], _currentColor ) && ( newNode._from == -1 || newNode._cost > moveCost ) ) {
-                const Maps::Tiles & tile = world.GetTiles( newIndex );
+                Maps::Tiles & tile = world.GetTiles( newIndex );
 
                 newNode._from = currentNodeIdx;
                 newNode._cost = moveCost;
                 newNode._objectID = tile.GetObject();
+                tile.debugCost = moveCost;
 
                 // duplicates are allowed if we find a cheaper way there
                 if ( tile.isWater() == fromWater )

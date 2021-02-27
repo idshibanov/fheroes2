@@ -1455,18 +1455,14 @@ void Maps::Tiles::RedrawPassable( fheroes2::Image & dst, const Rect & visibleTil
 #ifdef WITH_DEBUG
     const Point mp = Maps::GetPoint( GetIndex() );
 
-    if ( visibleTileROI & mp ) {
-        if ( 0 == tilePassable || DIRECTION_ALL != tilePassable ) {
-            fheroes2::Image sf = PassableViewSurface( tilePassable );
+    if ( visibleTileROI & mp && debugCost ) {
+        fheroes2::Image sf( 31, 31 );
+        sf.reset();
+        const Text text( std::to_string( debugCost ), Font::SMALL );
+        text.Blit( 10, 13, sf );
 
-            if ( impassableTileRule ) {
-                const Text text( std::to_string( impassableTileRule ), Font::SMALL );
-                text.Blit( 13, 13, sf );
-            }
-
-            const Interface::GameArea & area = Interface::Basic::Get().GetGameArea();
-            area.BlitOnTile( dst, sf, 0, 0, mp );
-        }
+        const Interface::GameArea & area = Interface::Basic::Get().GetGameArea();
+        area.BlitOnTile( dst, sf, 0, 0, mp );
     }
 #else
     (void)dst;
